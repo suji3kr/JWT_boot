@@ -15,7 +15,7 @@ Spring Security는 강력한 보안 프레임워크로, 인증과 인가를 처�
 
 <br>
 
-**1. Spring Security**
+### 1. Spring Security
 ✅ 장점
 강력한 보안 기능: 인증(Authentication)과 인가(Authorization)를 쉽게 구현 가능
 유연한 확장성: 다양한 인증 방식(JWT, OAuth2, 세션 기반 인증 등)과 쉽게 연동 가능
@@ -39,7 +39,7 @@ Spring Security는 강력한 보안 프레임워크로, 인증과 인가를 처�
 토큰 크기가 큼: JWT에는 클레임(Claim) 정보가 포함되므로, 일반적인 세션 기반 인증보다 데이터 전송량이 증가할 수 있음
 강제 로그아웃 어려움: 기존 토큰을 서버에서 무효화할 수 없고, 클라이언트에서 직접 폐기해야 함 (일반적인 해결책: 블랙리스트 저장 또는 짧은 만료시간 설정)
 
-3. OAuth2 (Open Authorization 2.0)
+### 3. OAuth2 (Open Authorization 2.0)
 **✅ 장점**
 소셜 로그인 지원: Google, Facebook, GitHub 같은 외부 서비스를 이용한 인증이 가능
 보안성이 높음: 액세스 토큰과 리프레시 토큰을 활용하여 보안성을 강화할 수 있음
