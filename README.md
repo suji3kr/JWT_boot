@@ -85,7 +85,8 @@ false로 지정해야 보이지 않는다.
 
 ![image](https://github.com/user-attachments/assets/46911832-a565-4d6b-a121-a559734a5e91)
 
-<br><br>
+<br>
+<br>
 
 
 ### JWT 으로 백앤드 보호하기 
@@ -95,17 +96,134 @@ false로 지정해야 보이지 않는다.
           implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
           runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5', 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+
+<br>
+
 ![image](https://github.com/user-attachments/assets/e1c6ecde-b48e-4b6e-9bd8-431a876d35c6)
 
 
 
+<br><br>
+
+
+![image](https://github.com/user-attachments/assets/0ea768a6-3538-443d-97df-8cf75f74fda0)
+
+<br><br>
+
+                    package com.company.cardatabase.service;
+                    
+                    import org.springframework.stereotype.Component;
+                    
+                    @Component  // 서비스와 다른 의미의 토큰으로 쓰려고 컴포넌트를 씀, 자체 저장.. 사실 service쓸수도 있지만 class집어넣을땐 component
+                    public class JwtService {
+                        //1일
+                        static final long EXPIRATIONTIME = 86400000;
+                        static final String PREFIX = "Bearer";
+                    
+                        //비밀키 생성, 시연 목적으로만 이용
+                        static final Key key =Keys.secretKeyFor(SignatureAlgorithm.ES256);
+                        // 운영 환경에선 애플리케이션 구성에서 읽어들여와야함
+                    
+                    
+                        //서명된 JWT 토큰을 생성
+                        public String getToken(String username){
+                            String token = Jwts.builder()
+                                    .setSubject(username)
+                                    .setExpiration(new Date(System.currentTimeMillis()+
+                                            EXPIRATIONTIME))
+                                    .signWith(key)
+                                    .compact();
+                            return token;
+                        }
 
 
 <br><br>
 
 -----------------------------------------------------------
 
-<br><br><br>
+<br>
+
+시간 끝 
+.setExpiration
+
+                    
+                    
+                        //요청의 Authorization 헤더에서 토큰을 가져온뒤
+                        //토큰을 확인하고 사용자 이름을 가져옴
+                        public  String getAuthUser(HttpServletRequest request){
+                            String token =request.getHeader
+                                    (HttpHeaders.AUTHORIZATION);
+                            if (token != null){
+                                String user = Jwts.parserBuilder()
+                                        .setSigningKey(key)
+                                        .build()
+                                        .parseClaimsJws(token.replace(PREFIX, ""))
+                                        .getBody()
+                                        .getSubject();
+                                if (user!= null)
+                                    return user;
+                            }
+                            return  null;
+                        }
+                    }
+
+
+<br>
+
+
+
+                    
+                    import com.company.cardatabase.service.JwtService;
+                    import lombok.RequiredArgsConstructor;
+                    import org.springframework.http.HttpHeaders;
+                    import org.springframework.http.ResponseEntity;
+                    import org.springframework.security.authentication.AuthenticationManager;
+                    import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+                    import org.springframework.security.core.Authentication;
+                    import org.springframework.web.bind.annotation.PostMapping;
+                    import org.springframework.web.bind.annotation.RequestBody;
+                    import org.springframework.web.bind.annotation.RestController;
+                    
+                    @RestController
+                    @RequiredArgsConstructor
+                    public class LoginController {
+                        private final JwtService jwtService;
+                        private final AuthenticationManager authenticationManager;
+                    
+                    
+                        @PostMapping("/login")
+                        public ResponseEntity<?> getToken(@RequestBody
+                                                              AccountCredentials credentials){
+                            //토큰을 생성하고 응답의 Authorization 헤더로 전송
+                            UsernamePasswordAuthenticationToken creds = new
+                                    UsernamePasswordAuthenticationToken(credentials.username(),
+                                    credentials.password());
+                            Authentication auth = authenticationManager.authenticate(creds);
+                    
+                            //토큰을 생성
+                            String jwts = jwtService.getToken(auth.getName());
+                    
+                            //생성된 토큰으로 응답을 빌드
+                            return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION,
+                                    "Bearer" + jwts).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,
+                                    "Authorization").build();
+                        }
+                    }
+                    
+                    
+                    
+                        @Bean
+                        public AuthenticationManager authenticationManager(
+                                AuthenticationConfiguration authConfig) throws Exception{
+                            return authConfig.getAuthenticationManager();
+                        }
+                    }
+                    
+
+
+
+<br><br>
+
 
 
 
@@ -123,6 +241,12 @@ false로 지정해야 보이지 않는다.
                                       "/login").permitAll().anyRequest().authenticated());
               return http.build();
           }
+
+<br>
+
+
+
+<br>
 
 <br>
 
@@ -155,9 +279,13 @@ false로 지정해야 보이지 않는다.
 ![image](https://github.com/user-attachments/assets/eec7c1ac-ab2d-4ce7-980b-9b330d82c30e)
 
 <br>
+
 <br>
+
 ------------------------------------
+
 <br>
+
 
 
 **🔒 Spring Security, JWT, OAuth2의 장단점 비교**
@@ -179,31 +307,37 @@ Spring Security는 강력한 보안 프레임워크로, 인증과 인가를 처�
 
 <br>
 
-**2. JWT (JSON Web Token)**
-✅ 장점
+### 2. JWT (JSON Web Token)
+
+**✅ 장점**
 세션을 유지할 필요 없음: Stateless 방식으로 서버 부담이 적음 (특히 확장성 높은 시스템에 유리)
 빠른 인증 처리: 토큰 자체에 사용자 정보가 포함되어 있어 별도의 DB 조회 없이 인증 가능
 다양한 플랫폼에서 사용 가능: REST API, 모바일, 마이크로서비스 등 다양한 환경에서 활용 가능
-❌ 단점
+
+**❌ 단점**
 토큰 탈취 위험: 토큰이 유출되면 해당 유저의 권한이 그대로 노출될 위험이 있음 (해결책: 토큰 만료 시간 짧게 설정 & Refresh Token 사용)
 토큰 크기가 큼: JWT에는 클레임(Claim) 정보가 포함되므로, 일반적인 세션 기반 인증보다 데이터 전송량이 증가할 수 있음
 강제 로그아웃 어려움: 기존 토큰을 서버에서 무효화할 수 없고, 클라이언트에서 직접 폐기해야 함 (일반적인 해결책: 블랙리스트 저장 또는 짧은 만료시간 설정)
+
 3. OAuth2 (Open Authorization 2.0)
-✅ 장점
+**✅ 장점**
 소셜 로그인 지원: Google, Facebook, GitHub 같은 외부 서비스를 이용한 인증이 가능
 보안성이 높음: 액세스 토큰과 리프레시 토큰을 활용하여 보안성을 강화할 수 있음
 권한 위임 가능: 특정 권한만 부여하여 서비스 간의 안전한 데이터 공유가 가능
-❌ 단점
+
+**❌ 단점**
 구현이 복잡함: OAuth2의 흐름(Authorization Code, Implicit, Password Credentials, Client Credentials)이 복잡하여 설정이 어려움
 액세스 토큰 관리 필요: 토큰의 유효기간을 관리해야 하고, 리프레시 토큰을 활용하여 갱신하는 추가적인 로직이 필요함
 외부 서비스 의존성: 소셜 로그인(예: Google OAuth)을 사용할 경우, 해당 서비스의 정책 변경에 영향을 받을 수 있음
+
 ✅ 언제 어떤 방식을 사용해야 할까?
 비교 항목	JWT	OAuth2
 주요 사용 사례	REST API 인증, 마이크로서비스	소셜 로그인, 서드파티 서비스 연동
 보안 수준	중간 (토큰 유출 시 위험)	높음 (권한 위임 및 갱신 가능)
 서버 부담	낮음 (Stateless)	중간 (토큰 갱신 및 외부 서비스 연동 필요)
 구현 난이도	쉬움 (토큰 생성 및 검증)	어려움 (OAuth 흐름 구현 필요)
-📌 결론
+
+**📌 결론**
 JWT: 단순한 REST API 인증이 필요하고, Stateless한 시스템이 필요할 때 유용
 OAuth2: 소셜 로그인, 서드파티 API 연동, 권한 위임이 필요한 경우 적합
 Spring Security: 보안 정책을 더욱 강화하고 싶을 때 필수적으로 사용
@@ -211,3 +345,11 @@ Spring Security: 보안 정책을 더욱 강화하고 싶을 때 필수적으로
 **사용자 기반의 OAuth 인증(소셜 로그인 등)**이 필요하다면 OAuth2를 고려하는 것이 좋습니다.
 
 어떤 인증 방식이 필요할지 고민된다면 구체적인 사용 사례를 알려주시면 더욱 맞춤형으로 추천해 드릴 수 있어요! 😊
+
+
+
+
+------------------------------------
+<br><br>
+
+
