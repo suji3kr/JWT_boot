@@ -1,0 +1,154 @@
+# ---------------------------
+# OS별 불필요한 파일 제거
+# ---------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+$RECYCLE.BIN/
+[Dd]esktop.ini
+
+# ---------------------------
+# IDE 관련 파일 제거
+# ---------------------------
+# Eclipse
+.metadata
+bin/
+tmp/
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+.cproject
+.buildpath
+
+# IntelliJ IDEA
+.idea/
+.idea_modules/
+*.iml
+*.iws
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf
+.idea/**/contentModel.xml
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# NetBeans
+**/nbproject/private/
+**/nbproject/Makefile-*.mk
+**/nbproject/Package-*.bash
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ---------------------------
+# Java 및 Spring Boot 관련
+# ---------------------------
+# 컴파일된 클래스 파일
+*.class
+
+# 로그 파일
+*.log
+
+# 패키징된 파일 (배포 목적이 아니라면 제외)
+*.jar
+*.war
+*.ear
+
+# JVM 충돌 로그 및 리플레이 파일
+hs_err_pid*
+replay_pid*
+
+# H2 데이터베이스 파일
+*.h2.db
+
+# Lombok 캐시
+.lombok/
+
+# ---------------------------
+# 빌드 도구 관련
+# ---------------------------
+# Gradle
+.gradle/
+build/
+!src/**/build/
+gradle-app.setting
+.gradle/gradle.properties
+.gradle/gradle-wrapper.properties
+
+# Gradle Wrapper JAR 파일 제외 (Git에 올리려면 주석 해제)
+# !gradle-wrapper.jar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ---------------------------
+# 환경 변수 및 설정 파일
+# ---------------------------
+# 환경 변수 파일 (보안상 Git에 올리지 않음)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+
+# Spring Boot 설정 파일 (로컬 전용일 경우 Git에 올리지 않음)
+application.properties
+application.yml
+application-*.properties
+application-*.yml
+
+# ---------------------------
+# Docker 관련
+# ---------------------------
+# Docker 파일
+.dockerignore
+docker-compose.override.yml
+
+# ---------------------------
+# 기타
+# ---------------------------
+# Thumbnails
+Thumbs.db
+
+# Java Heap Dump 파일
+*.hprof
+
+# SonarQube 관련
+.idea/sonarIssues.xml
+.idea/sonarlint/
+
+# JetBrains 보안 설정
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/markdown-navigator.xml
+.idea/**/markdown-navigator-enh.xml
+.idea/**/markdown-navigator/
